@@ -1,2 +1,0 @@
-# SensorTape
-Hello
