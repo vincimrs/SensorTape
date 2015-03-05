@@ -166,7 +166,10 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 			if(mouseX > listSensors.get(i).getXPosition()  && mouseX < listSensors.get(i).getXPosition()+60  && mouseY > listSensors.get(i).getYPosition()&& mouseY < listSensors.get(i).getYPosition()+60) { 
 				//The original if(mouseX >40 && mouseX<80 && mouseY>40 && mouseY<100)
 				  char tempC = 'c'; 
-				  sendCommand(i+1,tempC);
+				  byte a = (byte) random(0,100); 
+				  byte b = (byte) random(0,100); 
+				  byte c = (byte) random(0,100); 
+				  changeLEDColor(i+1,a,b,c);
 			}//end if 
 		}//end for
 		rotation = rotation +10 ;
@@ -182,11 +185,37 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 		  visualizeSensorType  =2;
 
 	  else if (key =='3') { 
-		  char c = 'a'; 
+		 // char c = 'a'; 
 		  //myPort.write(c);
 		  char tempC = 'c';
-		  sendCommand(9,tempC);
+		  byte a = 100;  //byte is signed -127 to +127
+		  byte b = 0; 
+		  byte c = 0; 
+		  changeLEDColor(1,a,b,c);
 	  }
+	  
+	  else if (key =='4') { 
+		 // char c = 'a'; 
+		  //myPort.write(c);
+		  char tempC = 'c';
+		  byte a = 0; 
+		  byte b = 100; 
+		  byte c = 0; 
+		  changeLEDColor(1,a,b,c);
+	  }
+	  
+	  else if (key =='5') { 
+		 // char c = 'a'; 
+		  //myPort.write(c);
+		  char tempC = 'c';
+		  byte a = 0; 
+		  byte b = 0; 
+		  byte c = 100; 
+		  changeLEDColor(1,a,b,c);
+	  }
+	  
+	  
+	  
 	}//end keyPr essed
 	
 	public void determineOrientation() { 
@@ -253,12 +282,14 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 	}//end determineOrientation
 	
 	
-	public void sendCommand( int node,char command) {
+	public void changeLEDColor( int node,byte command1, byte command2, byte command3) {
 		//nice page explaining: 
 		//http://blog.danielkerris.com/?p=349 		
 		myPort.write((char)(node/256));
 		myPort.write(node & 0xff);
-		myPort.write(command);
+		myPort.write(command1);
+		myPort.write(command2);
+		myPort.write(command3); 
 		
 	}
 	

@@ -63,7 +63,7 @@ public class visualize {
 			  applet.text(convertToTemperature(data[2]), xpos, ypos);
 		  }
 		  
-		 // applet.rect(xpos,ypos, 60,60);
+		  applet.rect(xpos,ypos, 60,60);
 		 // applet.rect(10+70*position,60*orientation, 60,60);
 		 // System.out.println(orientation);
 		  
@@ -95,7 +95,17 @@ public class visualize {
 			    
 			    applet.translate(newPosX, newPosY+800);
 			    applet.rotate(axis[0], -axis[1], axis[3], axis[2]);
-
+		
+			    
+			    /*
+			    applet.fill(0, 0, 255, 200);
+			    applet.pushMatrix();
+			   // applet.translate(0, 0, -120);
+			   // applet.rotateX(applet.PI/2);
+			    drawCylinder(0, 20, 20, 8);
+			    applet.popMatrix();
+			    */
+			    
 			    /*
 			    		if (data[0]==5) { 
 			    			applet.text(Float.toString(applet.degrees(applet.cos(axis[1]))), 500,500);
@@ -173,6 +183,73 @@ public class visualize {
 	    
 	        // Center point
 	        applet. vertex(0, tall, 0);
+	        for (int i = 0; i < sides + 1; i++) {
+	        	applet.vertex(bottomRadius * applet.cos(angle), tall, bottomRadius * applet.sin(angle));
+	            angle += angleIncrement;
+	        }
+	        applet.endShape();
+	    }
+	}
+	
+	void drawAirplane(){ 
+		  applet.pushMatrix();
+		  applet.translate(0, 0, -120);
+		  applet.rotateX(applet.PI/2);
+		  drawCylinder(0, 20, 20, 8);
+		  applet.popMatrix();
+		    
+		    // draw wings and tail fin in green
+		  applet. fill(0, 255, 0, 200);
+		  applet. beginShape(applet.TRIANGLES);
+		  applet. vertex(-100,  2, 30); applet.vertex(0,  2, -80); applet.vertex(100,  2, 30);  // wing top layer
+		  applet.  vertex(-100, -2, 30);applet. vertex(0, -2, -80);applet. vertex(100, -2, 30);  // wing bottom layer
+		  applet.  vertex(-2, 0, 98); applet.vertex(-2, -30, 98);applet. vertex(-2, 0, 70);  // tail left layer
+		  applet.  vertex( 2, 0, 98);applet. vertex( 2, -30, 98);applet. vertex( 2, 0, 70);  // tail right layer
+		  applet.  endShape();
+		  applet.   beginShape(applet.QUADS);
+		  applet.  vertex(-100, 2, 30);applet. vertex(-100, -2, 30); applet.vertex(  0, -2, -80); applet.vertex(  0, 2, -80);
+		  applet.  vertex( 100, 2, 30); applet.vertex( 100, -2, 30); applet.vertex(  0, -2, -80); applet.vertex(  0, 2, -80);
+		  applet.  vertex(-100, 2, 30); applet.vertex(-100, -2, 30); applet.vertex(100, -2,  30); applet.vertex(100, 2,  30);
+		  applet.  vertex(-2,   0, 98); applet.vertex(2,   0, 98); applet.vertex(2, -30, 98); applet.vertex(-2, -30, 98);
+		  applet.  vertex(-2,   0, 98); applet.vertex(2,   0, 98); applet.vertex(2,   0, 70); applet.vertex(-2,   0, 70);
+		  applet.  vertex(-2, -30, 98); applet.vertex(2, -30, 98); applet.vertex(2,   0, 70); applet.vertex(-2,   0, 70);
+		  applet.  endShape();
+		    
+		  applet.  popMatrix();
+	}
+	
+	void drawCylinder(float topRadius, float bottomRadius, float tall, int sides) {
+	    float angle = 0;
+	    float angleIncrement = applet.TWO_PI / sides;
+	    applet.beginShape(applet.QUAD_STRIP);
+	    for (int i = 0; i < sides + 1; ++i) {
+	    	applet.vertex(topRadius*applet.cos(angle), 0, topRadius*applet.sin(angle));
+	    	applet.vertex(bottomRadius*applet.cos(angle), tall, bottomRadius*applet.sin(angle));
+	        angle += angleIncrement;
+	    }
+	    applet.endShape();
+	    
+	    // If it is not a cone, draw the circular top cap
+	    if (topRadius != 0) {
+	        angle = 0;
+	        applet.beginShape(applet.TRIANGLE_FAN);
+	        
+	        // Center point
+	        applet.vertex(0, 0, 0);
+	        for (int i = 0; i < sides + 1; i++) {
+	        	applet.vertex(topRadius * applet.cos(angle), 0, topRadius * applet.sin(angle));
+	            angle += angleIncrement;
+	        }
+	        applet.endShape();
+	    }
+	  
+	    // If it is not a cone, draw the circular bottom cap
+	    if (bottomRadius != 0) {
+	        angle = 0;
+	        applet.beginShape(applet.TRIANGLE_FAN);
+	    
+	        // Center point
+	        applet.vertex(0, tall, 0);
 	        for (int i = 0; i < sides + 1; i++) {
 	        	applet.vertex(bottomRadius * applet.cos(angle), tall, bottomRadius * applet.sin(angle));
 	            angle += angleIncrement;

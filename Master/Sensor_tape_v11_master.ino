@@ -77,8 +77,10 @@ void loop() {
   if (Serial.available() >= 3) { 
     int whereToSend = Serial.read() *256; 
     whereToSend = whereToSend + Serial.read(); 
-    char command = Serial.read();
-    sendByteToSlave(whereToSend, command);
+    byte command1 = Serial.read();
+    byte command2 = Serial.read(); 
+    byte commant3 = Serial.read(); 
+    sendByteToSlave(whereToSend, command1,command2,commant3);
   }
   
   
@@ -180,9 +182,11 @@ void requestFromDeviceDuringStart(int device, int bytes) {
     delay(5);
 }
 
-void sendByteToSlave(int address, char command) { 
+void sendByteToSlave(int address, uint8_t command1, uint8_t command2, uint8_t command3) { 
   Wire.beginTransmission(address); 
-  Wire.write(5); 
+  Wire.write(command1); 
+  Wire.write(command2); 
+  Wire.write(command3); 
   Wire.endTransmission(); 
   
 } 

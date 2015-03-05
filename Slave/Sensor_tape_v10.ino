@@ -1,5 +1,6 @@
 
 //This is for tape v3. Some pins are different in the new version
+//Includes motion and neopixels
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 #include <SPI.h>
@@ -67,6 +68,7 @@ String valueString = "a";
 byte valAll[1]; 
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+uint8_t masterReceive[3] = {0x00,0x00,0x00} ;
 
 // ================================================================
 // ===               INTERRUPT DETECTION ROUTINE                ===
@@ -225,11 +227,7 @@ void requestEvent()
         digitalWrite(ledRed, HIGH);
         lightAnalogRead = analogRead(A6); // Read light value 
         thermistorAnalogRead = analogRead(A7); //Read thermistor valie
-      //  digitalWrite(resistanceSenseEnable, LOW);  
-        delayMicroseconds(500);  
         positionAnalogRead = analogRead(A1); //Read position
-        delayMicroseconds(500);
-      //  digitalWrite(resistanceSenseEnable, HIGH);
         
         byte a = deviceID & 0xFF;
         byte b = (deviceID >>8 ) & 0xFF;
@@ -257,11 +255,21 @@ void requestEvent()
 
 void receiveEvent(int howMany)
 {
-
+  //int i = 0; 
   if (Wire.available()) { 
-    char x  = Wire.read(); 
-    digitalWrite(ledBlue, !digitalRead(ledBlue));     
+    //char x  = Wire.read(); 
+    //digitalWrite(ledBlue, !digitalRead(ledBlue));     
+    masterReceive[0] = Wire.read(); 
+    masterReceive[1] = Wire.read(); 
+    masterReceive[2] = Wire.read(); 
+    //i++; 
   }
+   pixels.setPixelColor(0, pixels.Color(masterReceive[0],masterReceive[1],masterReceive[2])); // Moderately bright green color.
+    pixels.show();
+    /*
+    while(1 < Wire.available()) // loop through all but the last { 
+    }
+    */
   
 }
 
