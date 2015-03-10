@@ -53,21 +53,28 @@ public class visualize {
 		  }
 		  //System.out.println(data[1]);
 		  if (type ==1) {
-			  applet.fill(200,200,0); //or fill with data[1], to change color
+			  //applet.fill(200,200,0); //or fill with data[1], to change color
+			  applet.fill(data[1],0,0);
+			  applet.textSize(20); 
+			  applet.text(data[1], xpos, ypos);
+			  
 		  }
 		  
 		  if (type ==2) { 
-			//  applet.fill(data[2]/10,0,0);
+			  applet.fill(data[1],0,0);
 			  //applet.fill(255,255,255); 
 			  applet.textSize(20);
 			  applet.text(convertToTemperature(data[2]), xpos, ypos);
+			  
 		  }
 		  
+		 
 		  applet.rect(xpos,ypos, 60,60);
 		 // applet.rect(10+70*position,60*orientation, 60,60);
 		 // System.out.println(orientation);
 		  
 		  applet.pushMatrix(); 
+		  
 		 // applet.translate(xpos,ypos+400); 
 		  
 		  if (data.length>5) {
@@ -89,31 +96,12 @@ public class visualize {
 			    xglobal = newPosX; 
 			    yglobal = newPosY; 
 			    
-			    System.out.println(data[0] +"," + xglobal + ", " + yglobal + "  ," + xpos + "," + ypos);
+			    //System.out.println(data[0] +"," + xglobal + ", " + yglobal + "  ," + xpos + "," + ypos);
 			    
     				//applet.line(xpos, ypos+400, newPosX, newPosY);
 			    
 			    applet.translate(newPosX, newPosY+800);
 			    applet.rotate(axis[0], -axis[1], axis[3], axis[2]);
-		
-			    
-			    /*
-			    applet.fill(0, 0, 255, 200);
-			    applet.pushMatrix();
-			   // applet.translate(0, 0, -120);
-			   // applet.rotateX(applet.PI/2);
-			    drawCylinder(0, 20, 20, 8);
-			    applet.popMatrix();
-			    */
-			    
-			    /*
-			    		if (data[0]==5) { 
-			    			applet.text(Float.toString(applet.degrees(applet.cos(axis[1]))), 500,500);
-			    			System.out.println((axis[0]) + " , " + (axis[1]) + " , " + 
-			    					(axis[2]) + " , " +  axis[3] + "," + applet.degrees(axis[2] * axis[0])  ); 
-			    		}
-			    		*/
-			    		
 		  
 		  }else  
 		  { 
@@ -122,6 +110,7 @@ public class visualize {
 		  
 		  //drawCylinder(50, 50,  -data[1]/2, 40, data[1]  ); 
 		  drawCylinder(50, 50,  -50, 40, 50  ); 
+		  
 		  applet.popMatrix(); 
 		
 		  applet.stroke(126);
@@ -190,6 +179,7 @@ public class visualize {
 	        applet.endShape();
 	    }
 	}
+	
 	
 	void drawAirplane(){ 
 		  applet.pushMatrix();

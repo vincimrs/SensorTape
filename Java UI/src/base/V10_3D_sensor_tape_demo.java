@@ -12,12 +12,12 @@ import processing.core.*; //means we are importing everything from the processin
 //import processing.opengl.*;
 import toxi.geom.*;
 
-public class V9_3D_sensor_tape_demo extends PApplet {
+public class V10_3D_sensor_tape_demo extends PApplet {
 	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		PApplet.main(new String[] { "--present", "base.V9_3D_sensor_tape_demo" });
+		PApplet.main(new String[] { "--present", "base.V10_3D_sensor_tape_demo" });
 	}
 	
 	visualize drawStuff = new visualize(this);
@@ -32,16 +32,18 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 	// Currentdate = new Date();
 	boolean start = true; 
 	Serial myPort;        // The serial port 
-	int deviceCounter = 0;
+	int deviceCounter = 1;
 	sensorNode[] tempArraySensors = new sensorNode[128];
 	ArrayList <sensorNode>listSensors = new ArrayList<sensorNode>(); 
 	String direction = "right";
 	int visualizeSensorType  = 1;
 	boolean orientationFlag = true; 
 	int rotation = 0;
-	
+	int [] ledFlag = {2,2,2,2,2};
 	float[] q = new float[4];
 	Quaternion quat = new Quaternion(1, 0, 0, 0);
+	int xMenu = 0; 
+	int yMenu = 0; 
 	
 	public void setup() {
 	  size(1850, 1000, OPENGL); // animation is much smoother in P2D; text looks better with JAVA2D
@@ -50,7 +52,7 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 	  for (int i=0; i<Serial.list().length; i++) { 
 		  System.out.println(i + " : " + Serial.list()[i]); 
 	  }
-	  myPort = new Serial(this, Serial.list()[0], 9600);
+	  myPort = new Serial(this, Serial.list()[0], 19200);
 	  frameRate(30);
 	  
 	  smooth();
@@ -59,23 +61,38 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 	 
 	public void draw() {
 	  background(255);
-	  spotLight(255, 255, 255, width/2, height/2, 800, 0, 0, -1, PI, 2);
+	//  spotLight(255, 255, 255, width/2, height/2, 800, 0, 0, -1, PI, 2);
 	  //scale((float) 0.9);
 	  
 	  if (start) { 
+		  fill(128,128,128);
 		  textSize(35);
 		  text("Searching: " + Integer.toString(deviceCounter) + "/128", 300,300);
 		  text("Found: " + Integer.toString(listSensors.size()),300,400);
 	  }
 	  
 
-	  //if (!start) {  
+	  if (!start) {  
 		  if (visualizeSensorType == 1) { 
-			  drawStuff.drawSensors(listSensors,1);		  
+			  drawStuff.drawSensors(listSensors,1);	
+			  
+			  for (int i =0; i<listSensors.size(); i++) { 
+				   
+					  if (listSensors.get(i).getLatest()[1] < 100 && ledFlag[i] != 0) { 
+						  changeLEDColor(i+1,(byte)127,(byte)20,(byte)20);
+						  ledFlag[i] = 0; 
+						  
+					  }
+					  else if (listSensors.get(i).getLatest()[1] > 100 && ledFlag[i] !=1) { 
+						  changeLEDColor(i+1,(byte)29,(byte)29,(byte)127);
+						  ledFlag[i] = 1; 
+					  }  
+			  }//end LED visualization		  
 		  } 
 		  else if (visualizeSensorType ==2)  { 
 			  drawStuff.drawSensors(listSensors,2);
-		//  }
+			  
+		  }
 	  }
 	
 		  if (!start && orientationFlag) {
@@ -83,6 +100,7 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 			  orientationFlag = false; 
 		  }
 		  	  
+		  drawMenu(xMenu, yMenu);
 	}//end draw
 
  	 
@@ -120,11 +138,10 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 		 else if (inString != null && inString.charAt(0) == 'S' ) {
 			 start = false;
 		   // trim off any whitespace:
-			 //System.out.println(inString);
+			 System.out.println(inString);
 			 inString = trim(inString);
 			 String[] list = split(inString, ',');
-			 
-			// if (Integer.parseInt(list[1]) < 127 && Integer.parseInt(list[1])>0) { 		 
+			  		 
 				 sensorNode tempSensorNode = listSensors.get(Integer.parseInt(list[1])-1);
 				// int tempInput[] = null;
 				 int tempInput[]; // = {Integer.parseInt(list[2]), Integer.parseInt(list[3]),Integer.parseInt(list[4])};
@@ -135,21 +152,6 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 				 tempSensorNode.addData(tempInput);	
 				 listSensors.remove(Integer.parseInt(list[1])-1);
 				 listSensors.add(Integer.parseInt(list[1])-1,tempSensorNode );	 
-				 
-				 /*
-				 if (Integer.parseInt(list[1]) ==2) { 
-					 q[0] = (Integer.parseInt(list[5])) / 16384.0f;
-					 q[1] = (Integer.parseInt(list[6])) / 16384.0f;
-					 q[2] = (Integer.parseInt(list[7])) / 16384.0f;
-					 q[3] = (Integer.parseInt(list[8])) / 16384.0f;
-					 for (int i = 0; i < 4; i++) if (q[i] >= 2) q[i] = -4 + q[i];
-					 quat.set(q[0], q[1], q[2], q[3]);
-					 
-					 System.out.println("q:\t" + round(q[0]*100.0f)/100.0f + "\t" + round(q[1]*100.0f)/100.0f + "\t" + round(q[2]*100.0f)/100.0f + "\t" + round(q[3]*100.0f)/100.0f);
-				 }  
-				 */
-			 
-			// }
 		 }//end if String is correct    
 		 
 		 
@@ -165,11 +167,10 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 		for (int i=0; i<listSensors.size(); i++){ 
 			if(mouseX > listSensors.get(i).getXPosition()  && mouseX < listSensors.get(i).getXPosition()+60  && mouseY > listSensors.get(i).getYPosition()&& mouseY < listSensors.get(i).getYPosition()+60) { 
 				//The original if(mouseX >40 && mouseX<80 && mouseY>40 && mouseY<100)
-				  char tempC = 'c'; 
-				  byte a = (byte) random(0,100); 
-				  byte b = (byte) random(0,100); 
-				  byte c = (byte) random(0,100); 
-				  changeLEDColor(i+1,a,b,c);
+				xMenu = listSensors.get(i).getXPosition();  
+				yMenu = listSensors.get(i).getYPosition();
+				
+				
 			}//end if 
 		}//end for
 		rotation = rotation +10 ;
@@ -294,6 +295,12 @@ public class V9_3D_sensor_tape_demo extends PApplet {
 	}
 	
 	
+	void drawMenu(int xpos,int ypos) {
+		text("lights",xpos,ypos-20); 
+		text("temperature",xpos, ypos-40); 
+		text("orientation", xpos, ypos-60);
+		
+	}
 	
 	void drawCylinder(float topRadius, float bottomRadius, float tall, int sides) {
 	    float angle = 0;
