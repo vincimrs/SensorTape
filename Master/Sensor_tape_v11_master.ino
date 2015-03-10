@@ -33,7 +33,7 @@ void setup() {
   // initialize the digital pin as an output.
   pinMode(ledBlue, OUTPUT);   
   pinMode(resistanceSenseEnable, OUTPUT);
-  Serial.begin(9600); 
+  Serial.begin(19200); 
   Wire.begin(); // Start I2C Bus as Master
   digitalWrite(resistanceSenseEnable,LOW);
   
@@ -50,7 +50,7 @@ void setup() {
 // the loop routine runs over and over again forever:
 void loop() {
   //digitalWrite(ledBlue, LOW); 
-  delay(50);               // wait for a second 
+ // delay(50);               // wait for a second 
   //digitalWrite(ledBlue, HIGH);
   //delay(25);               // wait for a second
    digitalWrite(ledBlue, !digitalRead(ledBlue)); 
@@ -75,12 +75,18 @@ void loop() {
     }
   */
   if (Serial.available() >= 3) { 
+    delay(5);  //The communications sometimes crashes without this delay. 
     int whereToSend = Serial.read() *256; 
     whereToSend = whereToSend + Serial.read(); 
     byte command1 = Serial.read();
     byte command2 = Serial.read(); 
-    byte commant3 = Serial.read(); 
-    sendByteToSlave(whereToSend, command1,command2,commant3);
+    byte command3 = Serial.read(); 
+    delay(15); //The communications might crash without this delay 
+    //Check just in case if the commands are below 128. This is the maximum that can be sent by java Char (-127 to 127) 
+    if (command1 <128 && command2<128 & command3<128) { 
+    sendByteToSlave(whereToSend, command1,command2,command3);
+    }
+    Serial.flush();
   }
   
   
@@ -114,9 +120,9 @@ void findWhoIsAround() {
         lookUpPresence[i] = true; 
       } 
       else {
-        Serial.print(", ");
-        Serial.print(i);
-        Serial.println(" is not present"); 
+        //Serial.print(", ");
+       // Serial.print(i);
+       // Serial.println(" is not present"); 
         lookUpPresence[i] = false;
       } 
       //delay(1000);
@@ -150,7 +156,7 @@ void requestFromDevice(int device, int bytes) {
     }
     Serial.println(" ");
     deviceID = (inputArray[1]<<8) + inputArray[0];
-    delay(5);
+    delay(15);
     
     
 }
@@ -158,28 +164,29 @@ void requestFromDevice(int device, int bytes) {
 void requestFromDeviceDuringStart(int device, int bytes) { 
     unsigned char inputArray[bytes] ;
     setToZeros(); 
-    Wire.requestFrom(device, bytes);   
-    while(Wire.available())    // slave may send less than requested
-    { 
-      unsigned char  c= Wire.read(); 
-      inputArray[x] = c; 
-      x++;   
+    if (Wire.requestFrom(device, bytes)>0) {   
+      while(Wire.available())    // slave may send less than requested
+      { 
+        unsigned char  c= Wire.read(); 
+        inputArray[x] = c; 
+        x++;   
+      }
+      x = 0; 
+    
+      Serial.print("A");
+      Serial.print(",");
+      for(int i=0; i<bytes; i = i+2) { 
+        Serial.print((inputArray[i+1]<<8) + inputArray[i]);
+        if (i==bytes-2) { 
+        //DO nothing
+          }
+        else
+          Serial.print(",");
+      }
+      Serial.println(" ");
+      deviceID = (inputArray[1]<<8) + inputArray[0];
+      delay(5); //was 5 before
     }
-    x = 0; 
-  
-    Serial.print("A");
-    Serial.print(",");
-    for(int i=0; i<bytes; i = i+2) { 
-      Serial.print((inputArray[i+1]<<8) + inputArray[i]);
-      if (i==bytes-2) { 
-      //DO nothing
-        }
-      else
-        Serial.print(",");
-    }
-    Serial.println(" ");
-    deviceID = (inputArray[1]<<8) + inputArray[0];
-    delay(5);
 }
 
 void sendByteToSlave(int address, uint8_t command1, uint8_t command2, uint8_t command3) { 
